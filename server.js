@@ -6,6 +6,7 @@ const io = require('socket.io')(3000, { //create server and listen on port 3000 
   });
 
 io.on('connection', socket => {
-    console.log('nani');
-    socket.emit('Chatroom-message', 'Hello User~')
+    socket.on('send-message', message => {
+        socket.broadcast.emit('Chatroom-message', message);
+    })
 });
