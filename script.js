@@ -3,8 +3,16 @@ const messageContainer = document.getElementById('message-container');
 const messageForm = document.getElementById('send-container');
 const messageInput = document.getElementById('message-input');
 
+const userName = prompt('Please enter your name');
+appendMessage(`you joined`);
+socket.emit('new-user join', userName);
+
 socket.on('Chatroom-message', data => {
     appendMessage(data);
+});
+
+socket.on('user-connected', userName => {
+    appendMessage(`${userName} connected`);
 });
 //when submit is triggered, get text input and send it to server then reset to ''
 messageForm.addEventListener('submit', e => {
