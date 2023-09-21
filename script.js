@@ -8,7 +8,7 @@ appendMessage(`you joined`);
 socket.emit('new-user join', userName);
 
 socket.on('Chatroom-message', data => {
-    appendMessage(data);
+    appendMessage(`${data.userName} : ${data.message}`);
 });
 
 socket.on('user-connected', userName => {
@@ -18,6 +18,8 @@ socket.on('user-connected', userName => {
 messageForm.addEventListener('submit', e => {
     e.preventDefault();
     const message = messageInput.value;
+    //receive user's own text
+    appendMessage(`You : ${message}`);
     socket.emit('send-message', message);
     messageInput.value = '';
 })

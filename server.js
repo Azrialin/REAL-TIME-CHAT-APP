@@ -14,6 +14,6 @@ io.on("connection", (socket) => {
     socket.broadcast.emit('user-connected', userName);
   });
   socket.on("send-message", (message) => {
-    socket.broadcast.emit("Chatroom-message", message);
+    socket.broadcast.emit("Chatroom-message", {message: message , userName: users[socket.id]});
   });
 });
