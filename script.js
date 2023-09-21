@@ -14,6 +14,11 @@ socket.on('Chatroom-message', data => {
 socket.on('user-connected', userName => {
     appendMessage(`${userName} connected`);
 });
+
+socket.on('user-disconnected', userName => {
+    appendMessage(`${userName} disconnected`);
+});
+
 //when submit is triggered, get text input and send it to server then reset to ''
 messageForm.addEventListener('submit', e => {
     e.preventDefault();
