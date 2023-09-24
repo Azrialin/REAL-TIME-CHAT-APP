@@ -1,6 +1,8 @@
 const express =  require('express');
 const app = express();
 const server = require('http').Server(app);
+//decode special html character
+const entities = require('entities');
 const io = require("socket.io")(server, {
   //create server and handle CORS issue
   cors: {
@@ -43,6 +45,7 @@ server.listen(3000);
 
 io.on("connection", (socket) => {
   socket.on('new-user join', (room, userName) => {
+    room = entities.decodeHTML(room);
     //try
     console.log('Room name received:', room);
     console.log('Current rooms:', rooms);
@@ -56,6 +59,7 @@ io.on("connection", (socket) => {
     socket.to(room).emit('user-connected', userName);
   });
   socket.on("send-message", (room, message) => {
+    room = entities.decodeHTML(room);
     socket.to(room).emit("Chatroom-message", {message: message , userName: rooms[room].users[socket.id]});
   });
 
