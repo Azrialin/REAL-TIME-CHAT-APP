@@ -7,7 +7,7 @@ const messageInput = document.getElementById("message-input");
 if (messageForm != null) {
   const userName = prompt("Please enter your name");
   appendMessage(`you joined`);
-  socket.emit("new-user join", userName);
+  socket.emit("new-user join", roomName, userName);
 
   //when submit is triggered, get text input and send it to server then reset to ''
   messageForm.addEventListener("submit", (e) => {
@@ -15,7 +15,7 @@ if (messageForm != null) {
     const message = messageInput.value;
     //receive user's own text
     appendMessage(`You : ${message}`);
-    socket.emit("send-message", message);
+    socket.emit("send-message", roomName, message);
     messageInput.value = "";
   });
 }
