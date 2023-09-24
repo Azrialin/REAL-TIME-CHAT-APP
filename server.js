@@ -28,9 +28,14 @@ app.post('/room', (req, res) => {
   };
   rooms[req.body.room] = { users: {} };
   res.redirect(req.body.room);
+  io.emit('room-created', req.body.room);
 })
 
 app.get('/:room', (req, res) => {
+  //if the room doesnt exist return to main page
+  if (rooms[req.params.room] == null) {
+    return res.redirect('/');
+  }
   res.render('room', { roomName: req.params.room })
 });
 //listen on port 3000
