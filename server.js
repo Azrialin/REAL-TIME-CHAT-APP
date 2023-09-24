@@ -1,10 +1,32 @@
-const io = require("socket.io")(3000, {
-  //create server and listen on port 3000 and handle CORS issue
+const express =  require('express');
+const app = express();
+const server = require('http').Server(app);
+const io = require("socket.io")(server, {
+  //create server and handle CORS issue
   cors: {
     origin: "*",
     methods: ["GET", "POST"],
   },
 });
+
+//ejs config
+app.set('views', './views');
+app.set('view engine', 'ejs');
+app.use(express.static('public'));
+app.use(express.urlencoded({ extended: true }));
+
+const rooms = {};
+
+//route setting
+app.get('/', (req, res) => {
+  res.render('index', {rooms: rooms})
+});
+
+app.get('/:room', (req, res) => {
+  res.render('room', { roomName: req.params.room })
+});
+//listen on port 3000
+server.listen(3000);
 
 const users = {};
 
