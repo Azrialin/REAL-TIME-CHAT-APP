@@ -21,11 +21,14 @@ if (messageForm != null) {
 }
 
 socket.on('room-created', room => {
-    const roomElement = document.createElement('div');
-    roomElement.innerText = room;
+    const roomElement = document.createElement('span');
+    roomElement.innerText = "Room : " + room;
+    roomElement.classList.add('me-2');
+
     const roomLink = document.createElement('a');
     roomLink.href = `/${room}`;
     roomLink.innerText = 'join';
+    roomLink.classList.add('btn', 'btn-dark', 'btn-sm');
     roomContainer.append(roomElement);
     roomContainer.append(roomLink);
 })
