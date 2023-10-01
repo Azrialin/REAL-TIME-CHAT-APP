@@ -62,16 +62,24 @@
       .chatColor {
         color: white;
         padding: 5px 10px;
-        background-color: #444751; 
-        border-bottom: 1px solid grey; 
+        background-color: #444751;
+        border-bottom: 1px solid grey;
       }
       .ownMessage {
         text-align: right;
       }
+      .leave-room {
+        display: flex;
+        justify-content: flex-end;
+      }
     </style>
   </head>
   <body>
-    <div id="message-container"></div>
+    <div id="message-container">
+      <div class="leave-room">
+        <button id="leave-room-button" class="btn btn-info">Leave Room</button>
+      </div>
+    </div>
     <form id="send-container">
       <input type="text" class="form-control" id="message-input" />
       <button type="submit" id="send-button" class="btn btn-secondary">

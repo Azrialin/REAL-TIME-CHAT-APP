@@ -3,6 +3,7 @@ const messageContainer = document.getElementById("message-container");
 const roomContainer = document.getElementById("room-container");
 const messageForm = document.getElementById("send-container");
 const messageInput = document.getElementById("message-input");
+const leaveRoom = document.getElementById("leave-room-button");
 
 if (messageForm != null) {
   const userName = prompt("Please enter your name");
@@ -55,4 +56,11 @@ function appendMessage(message, own = false) {
     messageElement.classList.add("ownMessage");
   }
   messageContainer.append(messageElement);
+}
+//leave room
+if (leaveRoom != null) {
+  leaveRoom.addEventListener("click", () => {
+    //when the page redirect to other pages, socket will disconnect automatically
+    window.location.href = "/";
+  });
 }
