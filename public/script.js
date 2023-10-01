@@ -14,7 +14,7 @@ if (messageForm != null) {
     e.preventDefault();
     const message = messageInput.value;
     //receive user's own text
-    appendMessage(`You : ${message}`);
+    appendMessage(`You : ${message}`, true);
     socket.emit("send-message", roomName, message);
     messageInput.value = "";
   });
@@ -46,8 +46,13 @@ socket.on("user-disconnected", (userName) => {
 });
 
 //append message text on view
-function appendMessage(message) {
+function appendMessage(message, own = false) {
   const messageElement = document.createElement("div");
   messageElement.innerText = message;
+  messageElement.classList.add("chatColor");
+
+  if (own) {
+    messageElement.classList.add("ownMessage");
+  }
   messageContainer.append(messageElement);
 }
