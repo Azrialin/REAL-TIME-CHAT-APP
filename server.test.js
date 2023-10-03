@@ -3,20 +3,13 @@ const request = require('supertest');
 let server;
 
 beforeAll(() => {
-  server = require('./server'); // 這個檔案應該導出你的服務器實例
+  server = require('./server'); // strating server
 });
 
 afterAll((done) => {
-  server.close(done); // 關閉服務器
+  server.close(done); // closing server
 });
 
-//example
-describe('Test GET/', () => {
-    it('should respond with 200 status code', () => {
-        const response = 200;
-        expect(response).toBe(200);
-    })
-});
 //
 describe('GET /', () => {
     it('should respond with a 200 status code', async() => {
