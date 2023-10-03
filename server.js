@@ -77,3 +77,5 @@ function getUserRooms(socket) {
     return roomNames;
   }, [])
 }
+//test
+module.exports = server;
