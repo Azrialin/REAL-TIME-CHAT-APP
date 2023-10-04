@@ -39,10 +39,26 @@ describe('POST /room', () => {
 
 // get room
 describe('GET /:room', () => {
+  const roomName = "TestRoom";
+
+  //Nonexist room
   it('should redirect to main page if room does not exist', async () =>{
     const response = await request(server)
       .get('/Nonexist');
       expect(response.statusCode).toBe(302);
       expect(response.header.location).toBe('/');
+  });
+
+  //Exist room
+  it('should return 200 when the room exists', async () => {
+    //create room first 
+    await request(server)
+      .post('/room')
+      .set('Content-Type', 'application/x-www-form-urlencoded')
+      .send({ room: roomName });
+    //test the room's existence
+    const response = await request(server)
+      .get(`/${roomName}`);
+    expect(response.statusCode).toBe(200);
   });
 });
