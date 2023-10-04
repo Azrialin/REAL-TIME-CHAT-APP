@@ -25,12 +25,13 @@ app.get('/', (req, res) => {
 });
 
 app.post('/room', (req, res) => {
+  
   if (rooms[req.body.room] != null) {
     return res.redirect('/');
   };
   rooms[req.body.room] = { users: {} };
   io.emit('room-created', req.body.room);
-  res.redirect(req.body.room);
+  res.redirect(`/${req.body.room}`);
 })
 
 app.get('/:room', (req, res) => {
