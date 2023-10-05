@@ -1,6 +1,7 @@
 const request = require('supertest');
 // const server = require('./server');
 let server;
+const ioClient = require('socket.io-client');
 
 beforeAll(() => {
   server = require('./server'); // strating server
@@ -60,5 +61,31 @@ describe('GET /:room', () => {
     const response = await request(server)
       .get(`/${roomName}`);
     expect(response.statusCode).toBe(200);
+  });
+});
+
+// socket.io test
+describe('Socket.IO', () => {
+  let clientSocket;
+
+  beforeAll((done) => {
+    clientSocket = ioClient.connect('http://localhost:3000');
+    clientSocket.on('connect', done);
+  });
+
+  afterAll(() => {
+    clientSocket.disconnect();
+  });
+
+  it('should annouce new user join', async () => {
+    const roomName = 'TestRoom';
+    const userName = 'Eric';
+
+    clientSocket.emit('new-user join', roomName, userName);
+
+    clientSocket.on('user-connected', (clientName) => {
+      expect(clientName).toBe(userName);
+      done();
+    });
   });
 });
