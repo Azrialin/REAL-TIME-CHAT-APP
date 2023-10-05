@@ -76,7 +76,7 @@ describe('Socket.IO', () => {
   afterAll(() => {
     clientSocket.disconnect();
   });
-
+  //new user join test
   it('should annouce new user join', async () => {
     const roomName = 'TestRoom';
     const userName = 'Eric';
