@@ -128,3 +128,40 @@ describe('Socket.IO Message Tests', () => {
     clientSocket.emit('send-message', roomName, testMessage);
   });
 });
+//user disconnect test
+describe('Socket.IO User Disconnect Test', () => {
+  let clientSocket;
+  let receiverSocket;
+
+  beforeAll((done) => {
+    clientSocket = ioClient.connect('http://localhost:3000');
+    receiverSocket = ioClient.connect('http://localhost:3000');
+
+    clientSocket.on('connect', () => {
+      receiverSocket.on('connect', done);
+    });
+  });
+
+  afterAll(() => {
+    clientSocket.disconnect();
+    receiverSocket.disconnect();
+  });
+
+  it('should annouce user disconnects', (done) => {
+    const roomName = 'TestRoom';
+    const userName = 'Eric';
+
+    // two users join the room
+    clientSocket.emit('new-user join', roomName, userName);
+    receiverSocket.emit('new-user join', roomName, 'tester');
+
+    // listen for the user-disconnected event on receiverSocket
+    receiverSocket.on('user-disconnected', (disconnectedUserName) => {
+      expect(disconnectedUserName).toBe(userName);
+      done();
+    });
+
+    // disconnect clientSocket to trigger the user-disconnected event
+    clientSocket.disconnect();
+  });
+});
