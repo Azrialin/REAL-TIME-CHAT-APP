@@ -4,7 +4,7 @@ let server;
 const ioClient = require('socket.io-client');
 
 beforeAll(() => {
-  server = require('./server'); // strating server
+  server = require('./server'); // starting server
 });
 
 afterAll((done) => {
@@ -64,7 +64,8 @@ describe('GET /:room', () => {
   });
 });
 
-// socket.io test
+// socket.io tests
+//new user join test
 describe('Socket.IO', () => {
   let clientSocket;
 
@@ -76,7 +77,7 @@ describe('Socket.IO', () => {
   afterAll(() => {
     clientSocket.disconnect();
   });
-  //new user join test
+
   it('should annouce new user join', async () => {
     const roomName = 'TestRoom';
     const userName = 'Eric';
@@ -85,7 +86,45 @@ describe('Socket.IO', () => {
 
     clientSocket.on('user-connected', (clientName) => {
       expect(clientName).toBe(userName);
+    });
+  });
+});
+// sending and receiving message tests
+describe('Socket.IO Message Tests', () => {
+  let clientSocket;
+  let receiverSocket;
+
+  beforeAll((done) => {
+    clientSocket = ioClient.connect('http://localhost:3000');
+    receiverSocket = ioClient.connect('http://localhost:3000');
+
+    clientSocket.on('connect', () => {
+      receiverSocket.on('connect', done);
+    });
+  });
+
+  afterAll(() => {
+    clientSocket.disconnect();
+    receiverSocket.disconnect();
+  });
+
+  it('should send and receive a message', (done) => {
+    const roomName = 'TestRoom';
+    const testMessage = 'Hello World';
+    const userName = 'Eric';
+
+    // two users join the room
+    clientSocket.emit('new-user join', roomName, userName);
+    receiverSocket.emit('new-user join', roomName, 'tester');
+
+    // listen for the Chatroom-message on receiverSocket
+    receiverSocket.on('Chatroom-message', (data) => {
+      expect(data.message).toBe(testMessage);
+      expect(data.userName).toBe(userName);
       done();
     });
+
+    // emit send event from clientSocket
+    clientSocket.emit('send-message', roomName, testMessage);
   });
 });
