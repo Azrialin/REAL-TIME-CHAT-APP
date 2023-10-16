@@ -24,7 +24,7 @@ mongoose.connection.once("open", () => {
   });
 });
 
-mongoose.connection.on("error", () => {
+mongoose.connection.on("error", (err) => {
   console.error(err);
 });
 
@@ -88,6 +88,7 @@ io.on("connection", (socket) => {
       socket.to(room).emit("user-disconnected", rooms[room].users[socket.id]);
       delete rooms[room].users[socket.id];
     });
+    // console.log('A user disconnected');//try
   });
 });
 
@@ -98,4 +99,7 @@ function getUserRooms(socket) {
   }, []);
 }
 //test
-module.exports = server;
+module.exports = {
+  server,
+  mongoose
+};

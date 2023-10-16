@@ -1,14 +1,16 @@
 const request = require('supertest');
-// const server = require('./server');
-let server;
+const { server, mongoose} = require('./server');
+// let server;
 const ioClient = require('socket.io-client');
 
-beforeAll(() => {
-  server = require('./server'); // starting server
-});
+// beforeAll(() => {
+//   server = require('./server'); // starting server
+// });
 
-afterAll((done) => {
-  server.close(done); // closing server
+afterAll(async () => {
+  // closing server
+  await mongoose.connection.close();
+  server.close();
 });
 
 //index 
@@ -138,16 +140,17 @@ describe('Socket.IO User Disconnect Test', () => {
     receiverSocket = ioClient.connect('http://localhost:3000');
 
     clientSocket.on('connect', () => {
-      receiverSocket.on('connect', done);
+      receiverSocket.on('connect', done);// close while trying
     });
   });
 
-  afterAll(() => {
+  afterAll(async () => {
     clientSocket.disconnect();
     receiverSocket.disconnect();
+    await mongoose.connection.close();
   });
 
-  it('should annouce user disconnects', (done) => {
+  it('should annouce user disconnects', async () => {
     const roomName = 'TestRoom';
     const userName = 'Eric';
 
