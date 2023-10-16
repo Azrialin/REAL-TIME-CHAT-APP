@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require("express");
 const app = express();
 const server = require("http").Server(app);
@@ -12,8 +13,7 @@ const io = require("socket.io")(server, {
   },
 });
 //connect to MongoDB
-const MONGO_URL =
-  "mongodb+srv://admin:admin@cluster0.yq0rd2d.mongodb.net/user?retryWrites=true&w=majority";
+const MONGO_URL = process.env.MONGO_URL;
 
 mongoose.connection.once("open", () => {
   console.log("MongoDB connection ready~");
