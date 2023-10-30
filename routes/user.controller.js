@@ -3,10 +3,21 @@ const userModel = require('../models/user.model');
 //create new user
 const register = async (req, res) => {
     try {
+        //check if email already exist or not
+        const existingUser = await userModel.findUserByEmail(req.params.useremail);
+        if (existingUser) {
+            return res.status(400).json({ message: 'Email already in use'});
+        }
+
+        //if the email is available, create user
         const newUser = await userModel.createUser(req.body);
-        res.status(201).json(newUser);
+        if (newUser) {
+            res.status(201).json(newUser);//201 is created status code
+        } else {
+            res.status(500).json({ message: 'User creation failed '});
+        }
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        res.status(500).json({ error: error.message });
     }
 };
 
