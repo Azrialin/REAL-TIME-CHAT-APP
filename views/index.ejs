@@ -37,26 +37,27 @@
       a {
         color: white;
       }
-
     </style>
   </head>
   <body>
     <div id="room-container">
-        <% Object.keys(rooms).forEach(room => { %>
-          <div class="mb-2"> <!-- mb-2 是Bootstrap的工具類，表示bottom margin是0.5rem -->
-            <span class="me-2">Room : <%= room %></span>
-            <a href="/<%= room %>" class="btn btn-dark btn-sm">Join</a>
-          </div>
-        <% }) %>
+      <% Object.keys(rooms).forEach(room => { %>
+      <div class="mb-2">
+        <!-- mb-2 是Bootstrap的工具類，表示bottom margin是0.5rem -->
+        <span class="me-2">Room : <%= room %></span>
+        <a href="/<%= room %>" class="btn btn-dark btn-sm">Join</a>
       </div>
-      
-      <form action="/room" method="POST">
-          <div class="input-group"> <!-- 使用input-group組合input和button -->
-              <input name="room" type="text" class="form-control" placeholder="Enter room name" required>
-              <div class="input-group-append">
-                  <button type="submit" class="btn btn-success">New Room</button>
-              </div>
-          </div>
-      </form>
+      <% }) %>
+    </div>
+
+    <form action="/room" method="POST">
+      <div class="input-group">
+        <!-- 使用input-group組合input和button -->
+        <input name="room" type="text" class="form-control" placeholder="Enter room name" required/>
+        <div class="input-group-append">
+          <button type="submit" class="btn btn-success">New Room</button>
+        </div>
+      </div>
+    </form>
   </body>
 </html>
