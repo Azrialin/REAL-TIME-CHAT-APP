@@ -5,6 +5,7 @@ const server = require("http").Server(app);
 const mongoose = require("mongoose");
 //decode special html character
 const entities = require("entities");
+const { error } = require('console');
 const io = require("socket.io")(server, {
   //create server and handle CORS issue
   cors: {
@@ -40,7 +41,14 @@ const rooms = {};
 
 //route setting
 app.get("/", (req, res) => {
-  res.render("index", { rooms: rooms });
+  //delete it after login check is created
+  res.redirect("/login");
+  // res.render("index", { rooms: rooms });
+});
+
+app.get("/login", (req, res) => {
+  let errorMessage = false;
+  res.render("login");
 });
 
 app.post("/room", (req, res) => {
@@ -53,6 +61,7 @@ app.post("/room", (req, res) => {
 });
 
 app.get("/:room", (req, res) => {
+  //need to add login check
   //if the room doesnt exist return to main page
   if (rooms[req.params.room] == null) {
     return res.redirect("/");
