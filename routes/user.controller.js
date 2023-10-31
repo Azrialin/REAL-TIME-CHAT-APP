@@ -4,7 +4,7 @@ const userModel = require('../models/user.model');
 const register = async (req, res) => {
     try {
         //check if email already exist or not
-        const existingUser = await userModel.findUserByEmail(req.params.useremail);
+        const existingUser = await userModel.findUserByEmail(req.body.useremail);
         if (existingUser) {
             return res.status(400).json({ message: 'Email already in use'});
         }
