@@ -3,9 +3,8 @@ const express = require("express");
 const app = express();
 const server = require("http").Server(app);
 const mongoose = require("mongoose");
-//decode special html character
-const entities = require("entities");
-const { error } = require('console');
+const userController  = require("./routes/user.controller");
+const entities = require("entities");//decode special html character
 const io = require("socket.io")(server, {
   //create server and handle CORS issue
   cors: {
@@ -13,6 +12,7 @@ const io = require("socket.io")(server, {
     methods: ["GET", "POST"],
   },
 });
+
 //connect to MongoDB
 const MONGO_URL = process.env.MONGO_URL;
 
@@ -39,18 +39,24 @@ app.use(express.urlencoded({ extended: true }));
 
 const rooms = {};
 
-//route setting
+//index route setting
 app.get("/", (req, res) => {
   //delete it after login check is created
   res.redirect("/login");
   // res.render("index", { rooms: rooms });
 });
 
+//login route
 app.get("/login", (req, res) => {
-  let errorMessage = false;
-  res.render("login");
+  let errorMessage = '';
+  res.render("login", { errorMessage: errorMessage});
 });
 
+//register
+app.post("/register", (req, res) => {
+
+});
+//create room 
 app.post("/room", (req, res) => {
   if (rooms[req.body.room] != null) {
     return res.redirect("/");
@@ -60,6 +66,7 @@ app.post("/room", (req, res) => {
   res.redirect(`/${req.body.room}`);
 });
 
+//individual room route
 app.get("/:room", (req, res) => {
   //need to add login check
   //if the room doesnt exist return to main page
@@ -107,7 +114,7 @@ function getUserRooms(socket) {
     return roomNames;
   }, []);
 }
-//test
+//exports for API test
 module.exports = {
   server,
   mongoose
