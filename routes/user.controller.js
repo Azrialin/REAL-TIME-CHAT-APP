@@ -10,9 +10,13 @@ const register = async (req, res) => {
         }
 
         //if the email is available, create user
-        const newUser = await userModel.createUser(req.body);
-        if (newUser) {
-            res.status(201).json(newUser);//201 is created status code
+        const newUser = {
+            useremail: req.body.useremail,
+            password: req.body.password,
+        }
+        const createdUser = await userModel.createUser(newUser);
+        if (createdUser) {
+            res.status(201).json(createdUser);//201 is created status code
         } else {
             res.status(500).json({ message: 'User creation failed '});
         }
@@ -25,7 +29,7 @@ const register = async (req, res) => {
 
 const getUser = async (req, res) => {
     try {
-        const user = await userModel.findUserByEmail(req.params.useremail);
+        const user = await userModel.findUserByEmail(req.body.useremail);
         if (user) {
             res.status(200).json(user);
         } else {
