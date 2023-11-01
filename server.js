@@ -52,10 +52,8 @@ app.get("/login", (req, res) => {
   res.render("login", { errorMessage: errorMessage});
 });
 
-//register
-app.post("/register", (req, res) => {
-
-});
+//register request
+app.post("/register", userController.register);
 //create room 
 app.post("/room", (req, res) => {
   if (rooms[req.body.room] != null) {
