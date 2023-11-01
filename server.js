@@ -46,7 +46,7 @@ app.get("/", (req, res) => {
   // res.render("index", { rooms: rooms });
 });
 
-//login route
+//login page
 app.get("/login", (req, res) => {
   let errorMessage = '';
   res.render("login", { errorMessage: errorMessage});
@@ -54,6 +54,10 @@ app.get("/login", (req, res) => {
 
 //register request
 app.post("/register", userController.register);
+
+//login request
+app.post("/login", userController.getUser)
+
 //create room 
 app.post("/room", (req, res) => {
   if (rooms[req.body.room] != null) {
