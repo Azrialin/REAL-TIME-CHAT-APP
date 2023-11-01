@@ -31,7 +31,12 @@ const getUser = async (req, res) => {
     try {
         const user = await userModel.findUserByEmail(req.body.useremail);
         if (user) {
-            res.status(200).json(user);
+            //check password
+            if (user.password === req.body.password) {
+                res.status(200).json(user);
+            } else {
+                res.status(401).json({ message: 'Invalid password' });
+            }
         } else {
             res.status(404).json({ message: 'User not found' });
         }
