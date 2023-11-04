@@ -3,7 +3,8 @@ const express = require("express");
 const app = express();
 const server = require("http").Server(app);
 const mongoose = require("mongoose");
-const userController  = require("./routes/user.controller");
+const userController  = require("./routes/user.controller");//for web 
+const userApiController  = require("./routes/userApi.controller");//for postman
 const entities = require("entities");//decode special html character
 const io = require("socket.io")(server, {
   //create server and handle CORS issue
@@ -36,6 +37,7 @@ app.set("views", "./views");
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 const rooms = {};
 
@@ -52,11 +54,15 @@ app.get("/login", (req, res) => {
   res.render("login", { errorMessage: errorMessage});
 });
 
-//register request
-app.post("/register", userController.register);
+//register api route
+app.post("/api/register", userController.register);
+//login api route
+app.post("/api/login", userController.getUser);
 
-//login request
-app.post("/login", userController.getUser)
+//register web request
+app.post("/register", userApiController.register);
+//login web request
+app.post("/login", userApiController.getUser);
 
 //create room 
 app.post("/room", (req, res) => {
