@@ -20,13 +20,13 @@ const register = async (req, res) => {
             //TODO:目前註冊/登入成功只會直接轉頁，後面要加session去紀錄使用者，不然註冊/登入沒意義
             res.redirect('/home');
         } else {
-            // Respond with 400 Bad Request if user creation failed due to bad input data
-            return res.status(400).json({ message: 'User creation failed due to invalid data' });
+           // Redirect to the registration page with an error message
+           return res.redirect('/login?errorMessage=User creation failed');
         }
     } catch (error) {
-        // Log the error and respond with 500 Internal Server Error
         console.error('Registration error:', error);
-        return res.status(500).json({ error: 'Internal Server Error' });
+        // Redirect to the registration page with an error message
+        return res.redirect('/login?errorMessage=An error occurred, please try again');
     }
 };
 
@@ -38,15 +38,20 @@ const getUser = async (req, res) => {
         if (user) {
             //check password
             if (user.password === req.body.password) {
-                res.status(200).json(user);
+                //if useremail & password are correct redirect to home route
+                res.redirect('/home');
             } else {
-                res.status(401).json({ message: 'Invalid password' });
+                //if password are not correct redirect to home route with errorMessage
+                return res.redirect('/login?errorMessage=Invalid password');
             }
         } else {
-            res.status(404).json({ message: 'User not found' });
+            // if useremail are not correct redirect to home route with errorMessage
+            // res.status(404).json({ message: 'User not found' });
+            return res.redirect('/login?errorMessage=User not found');
         }
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error('Login error:', error);
+        return res.redirect('/login?errorMessage=An error occurred, please try again');
     }
 };
 
