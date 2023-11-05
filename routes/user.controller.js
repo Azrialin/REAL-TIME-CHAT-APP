@@ -6,7 +6,8 @@ const register = async (req, res) => {
         //check if email already exist or not
         const existingUser = await userModel.findUserByEmail(req.body.useremail);
         if (existingUser) {
-            return res.status(400).json({ message: 'Email already in use'});
+            // redirect back to /login and send error message
+            return res.redirect('/login?errorMessage=Email already in use');
         }
 
         //if the email is available, create user
@@ -16,6 +17,8 @@ const register = async (req, res) => {
         }
         const createdUser = await userModel.createUser(newUser);
         if (createdUser) {
+            //TODO:後面要加session去紀錄使用者，不然登入沒意義
+
             res.status(201).json(createdUser);//201 is created status code
         } else {
             res.status(500).json({ message: 'User creation failed '});
