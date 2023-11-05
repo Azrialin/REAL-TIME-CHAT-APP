@@ -55,14 +55,14 @@ app.get("/login", (req, res) => {
 });
 
 //register api route
-app.post("/api/register", userController.register);
+app.post("/api/register", userApiController.register);
 //login api route
-app.post("/api/login", userController.getUser);
+app.post("/api/login", userApiController.getUser);
 
 //register web request
-app.post("/register", userApiController.register);
+app.post("/register", userController.register);
 //login web request
-app.post("/login", userApiController.getUser);
+app.post("/login", userController.getUser);
 
 //create room 
 app.post("/room", (req, res) => {
