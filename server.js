@@ -51,7 +51,7 @@ app.get("/", (req, res) => {
 //login page
 app.get("/login", (req, res) => {
   let errorMessage = '';
-  res.render("login", { errorMessage: errorMessage});
+  res.render("login", { errorMessage: req.query.errorMessage});
 });
 
 //register api route
