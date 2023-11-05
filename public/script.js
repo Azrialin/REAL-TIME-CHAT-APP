@@ -61,6 +61,6 @@ function appendMessage(message, own = false) {
 if (leaveRoom != null) {
   leaveRoom.addEventListener("click", () => {
     //when the page redirect to other pages, socket will disconnect automatically
-    window.location.href = "/";
+    window.location.href = "/home";
   });
 }

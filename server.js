@@ -44,6 +44,7 @@ const rooms = {};
 //index route setting
 app.get("/", (req, res) => {
   //delete it after login check is created
+  //TODO:目前註冊/登入成功只會直接轉頁，後面要加session去紀錄使用者，不然註冊/登入沒意義
   res.redirect("/login");
   // res.render("index", { rooms: rooms });
 });
@@ -52,6 +53,14 @@ app.get("/", (req, res) => {
 app.get("/login", (req, res) => {
   let errorMessage = '';
   res.render("login", { errorMessage: req.query.errorMessage});
+});
+
+//home route setting
+app.get("/home", (req, res) => {
+  //delete it after login check is created
+  //TODO:目前註冊/登入成功只會直接轉頁，後面要加session去紀錄使用者，不然註冊/登入沒意義
+  // res.redirect("/login");
+  res.render("index", { rooms: rooms });
 });
 
 //register api route
@@ -67,7 +76,7 @@ app.post("/login", userController.getUser);
 //create room 
 app.post("/room", (req, res) => {
   if (rooms[req.body.room] != null) {
-    return res.redirect("/");
+    return res.redirect("/home");
   }
   rooms[req.body.room] = { users: {} };
   io.emit("room-created", req.body.room);
@@ -79,7 +88,7 @@ app.get("/:room", (req, res) => {
   //need to add login check
   //if the room doesnt exist return to main page
   if (rooms[req.params.room] == null) {
-    return res.redirect("/");
+    return res.redirect("/home");
   }
   res.render("room", { roomName: req.params.room });
 });
