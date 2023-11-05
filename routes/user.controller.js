@@ -17,14 +17,16 @@ const register = async (req, res) => {
         }
         const createdUser = await userModel.createUser(newUser);
         if (createdUser) {
-            //TODO:後面要加session去紀錄使用者，不然登入沒意義
-
-            res.status(201).json(createdUser);//201 is created status code
+            //TODO:目前註冊/登入成功只會直接轉頁，後面要加session去紀錄使用者，不然註冊/登入沒意義
+            res.redirect('/home');
         } else {
-            res.status(500).json({ message: 'User creation failed '});
+            // Respond with 400 Bad Request if user creation failed due to bad input data
+            return res.status(400).json({ message: 'User creation failed due to invalid data' });
         }
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        // Log the error and respond with 500 Internal Server Error
+        console.error('Registration error:', error);
+        return res.status(500).json({ error: 'Internal Server Error' });
     }
 };
 
