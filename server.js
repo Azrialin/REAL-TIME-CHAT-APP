@@ -1,7 +1,12 @@
 require('dotenv').config();
+const fs = require("fs");
+const https = require("https");
 const express = require("express");
 const app = express();
-const server = require("http").Server(app);
+const server = require("https").createServer({
+  key: fs.readFileSync("key.pem"),
+  cert: fs.readFileSync("cert.pem"),
+}, app);
 const mongoose = require("mongoose");
 const userController  = require("./routes/user.controller");//for web 
 const userApiController  = require("./routes/userApi.controller");//for postman
