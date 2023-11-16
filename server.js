@@ -2,15 +2,28 @@ require('dotenv').config();
 const fs = require("fs");
 const https = require("https");
 const express = require("express");
-const app = express();
-const server = https.createServer({
-  key: fs.readFileSync("key.pem"),
-  cert: fs.readFileSync("cert.pem"),
-}, app);
+const helmet = require("helmet");
 const mongoose = require("mongoose");
 const userController  = require("./routes/user.controller");//for web 
 const userApiController  = require("./routes/userApi.controller");//for postman
 const entities = require("entities");//decode special html character
+
+const app = express();
+app.use(helmet({
+  contentSecurityPolicy: false,
+}));
+//ejs config
+app.set("views", "./views");
+app.set("view engine", "ejs");
+app.use(express.static("public"));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+const server = https.createServer({
+  key: fs.readFileSync("key.pem"),
+  cert: fs.readFileSync("cert.pem"),
+}, app);
+
 const io = require("socket.io")(server, {
   //create server and handle CORS issue
   cors: {
@@ -36,13 +49,6 @@ mongoose.connection.on("error", (err) => {
 });
 
 mongoose.connect(MONGO_URL);
-
-//ejs config
-app.set("views", "./views");
-app.set("view engine", "ejs");
-app.use(express.static("public"));
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
 
 const rooms = {};
 
