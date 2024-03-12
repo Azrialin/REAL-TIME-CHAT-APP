@@ -9,9 +9,7 @@ const userApiController  = require("./routes/userApi.controller");//for postman
 const entities = require("entities");//decode special html character
 
 const app = express();
-app.use(helmet({
-  contentSecurityPolicy: false,
-}));
+app.use(helmet());
 //ejs config
 app.set("views", "./views");
 app.set("view engine", "ejs");
