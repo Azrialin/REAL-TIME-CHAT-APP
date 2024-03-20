@@ -9,7 +9,21 @@ const userApiController  = require("./routes/userApi.controller");//for postman
 const entities = require("entities");//decode special html character
 
 const app = express();
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"], // 默認策略，限制了可以載入哪些資源
+        scriptSrc: [
+          "'self'", 
+          // "'unsafe-inline'", // 允許內聯指令碼，但請注意安全風險
+          'https://cdnjs.cloudflare.com', // 允許載入來自 CDNJS 的指令碼
+          'https://cdn.jsdelivr.net' // 允許載入來自 jsDelivr 的指令碼
+        ],
+      },
+    },
+  })
+);
 //ejs config
 app.set("views", "./views");
 app.set("view engine", "ejs");
