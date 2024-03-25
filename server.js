@@ -16,7 +16,6 @@ app.use(
         defaultSrc: ["'self'"], // 默認策略，限制了可以載入哪些資源
         scriptSrc: [
           "'self'", 
-          // "'unsafe-inline'", // 允許內聯指令碼，但請注意安全風險
           'https://cdnjs.cloudflare.com', // 允許載入來自 CDNJS 的指令碼
           'https://cdn.jsdelivr.net' // 允許載入來自 jsDelivr 的指令碼
         ],
