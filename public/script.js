@@ -5,6 +5,10 @@ const messageForm = document.getElementById("send-container");
 const messageInput = document.getElementById("message-input");
 const leaveRoom = document.getElementById("leave-room-button");
 
+//get roomName
+const roomElement = document.getElementById("roomName");
+const roomName = roomElement.getAttribute("data-name");
+
 if (messageForm != null) {
   const userName = prompt("Please enter your name");
   appendMessage(`you joined`);
