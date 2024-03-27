@@ -77,6 +77,11 @@ app.get("/login", (req, res) => {
   res.render("login", { errorMessage: req.query.errorMessage});
 });
 
+//logout
+app.post("/logout", (req, res) => {
+  res.redirect("/login");
+});
+
 //home route setting
 app.get("/home", (req, res) => {
   //delete it after login check is created
