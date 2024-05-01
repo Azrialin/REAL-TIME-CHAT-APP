@@ -30,6 +30,12 @@ app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+//google auth config
+const config = {
+  CLIENT_ID: process.env.CLIENT_ID,
+  CLIENT_SECRET:process.env.CLIENT_SECRET,
+}
+;
 const server = https.createServer({
   key: fs.readFileSync("key.pem"),
   cert: fs.readFileSync("cert.pem"),
@@ -71,6 +77,17 @@ app.get("/", (req, res) => {
   // res.render("index", { rooms: rooms });
 });
 
+//login check
+function  checkLoggedIn(req, res, next) {
+  const isLoggedIn = true; //TODO
+  if (!isLoggedIn) {
+    return res.status(401).json({
+      error: "You must log in!",
+    })
+  }
+  next();
+}
+
 //login page
 app.get("/login", (req, res) => {
   let errorMessage = '';
@@ -82,8 +99,21 @@ app.post("/logout", (req, res) => {
   res.redirect("/login");
 });
 
+// auth google
+app.get('/auth/google', (req, res) => {
+
+});
+
+app.get('/auth/google/callback', (req, res) => {
+
+});
+
+app.get('/auth/logout', (req, res) => {
+
+});
+
 //home route setting
-app.get("/home", (req, res) => {
+app.get("/home", checkLoggedIn, (req, res) => {
   //delete it after login check is created
   //TODO:目前註冊/登入成功只會直接轉頁，後面要加session去紀錄使用者，不然註冊/登入沒意義
   // res.redirect("/login");
