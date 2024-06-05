@@ -161,11 +161,6 @@ app.get('/auth/google/callback',
   }
 );
 
-app.get('/auth/logout', (req, res) => {
-  req.logout();
-  return res.redirect('/');
-});
-
 //home route setting
 app.get("/home", checkLoggedIn, (req, res) => {
   //delete it after login check is created
