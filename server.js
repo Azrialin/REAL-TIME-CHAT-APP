@@ -5,12 +5,14 @@ const express = require("express");
 const helmet = require("helmet");
 const mongoose = require("mongoose");
 const passport = require('passport');
-const { Strategy } = require('passport-google-oauth20');
+const { Strategy: GoogleStrategy } = require('passport-google-oauth20');
+const LocalStrategy = require('passport-local').Strategy;
 const cookieSession = require('cookie-session');
 const userController  = require("./routes/user.controller");//for web 
 const userApiController  = require("./routes/userApi.controller");//for postman
 const entities = require("entities");//decode special html character
 const { verify } = require('crypto');
+const userModel = require('./models/user.model');
 
 //google auth config
 const config = {
@@ -31,7 +33,23 @@ function verifyCallback(accessToken, refreshToken, profile, done) {
   done(null, profile);
 }
 
-passport.use(new Strategy(AUTH_OPTIONS, verifyCallback));
+passport.use(new GoogleStrategy(AUTH_OPTIONS, verifyCallback));
+
+// Local strategy for username and password login
+passport.use(new LocalStrategy(
+  { usernameField: 'useremail' },
+  async (email, password, done) => {
+    try {
+      const user = await userModel.findUserByEmail(email);
+      if (!user || user.password !== password) {
+        return done(null, false, { message: 'Invalid email or password' });
+      }
+      return done(null, user);
+    } catch (error) {
+      return done(error);
+    }
+  }
+));
 
 // save session to the cookie
 passport.serializeUser((user, done) => {
@@ -181,7 +199,10 @@ app.post("/api/login", userApiController.getUser);
 //register web request
 app.post("/register", userController.register);
 //login web request
-app.post("/login", userController.getUser);
+app.post("/login", passport.authenticate('local', {
+  successRedirect: '/home',
+  failureRedirect: '/login?errorMessage=Invalid credentials'
+}));
 
 //create room 
 app.post("/room", (req, res) => {
