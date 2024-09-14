@@ -1,11 +1,107 @@
 require('dotenv').config();
+const fs = require("fs");
+const https = require("https");
 const express = require("express");
-const app = express();
-const server = require("http").Server(app);
+const helmet = require("helmet");
 const mongoose = require("mongoose");
+const passport = require('passport');
+const { Strategy: GoogleStrategy } = require('passport-google-oauth20');
+const LocalStrategy = require('passport-local').Strategy;
+const cookieSession = require('cookie-session');
 const userController  = require("./routes/user.controller");//for web 
 const userApiController  = require("./routes/userApi.controller");//for postman
 const entities = require("entities");//decode special html character
+const { verify } = require('crypto');
+const userModel = require('./models/user.model');
+
+//google auth config
+const config = {
+  CLIENT_ID: process.env.CLIENT_ID,
+  CLIENT_SECRET:process.env.CLIENT_SECRET,
+  COOKIE_KEY_1: process.env.COOKIE_KEY_1,
+  COOKIE_KEY_2: process.env.COOKIE_KEY_2,
+};
+
+const AUTH_OPTIONS = {
+  callbackURL: '/auth/google/callback',
+  clientID: config.CLIENT_ID,
+  clientSecret: config.CLIENT_SECRET,
+};
+
+function verifyCallback(accessToken, refreshToken, profile, done) {
+  console.log('Google profile', profile);
+  done(null, profile);
+}
+
+passport.use(new GoogleStrategy(AUTH_OPTIONS, verifyCallback));
+
+// Local strategy for username and password login
+passport.use(new LocalStrategy(
+  { usernameField: 'useremail' },
+  async (email, password, done) => {
+    try {
+      const user = await userModel.findUserByEmail(email);
+      if (!user || user.password !== password) {
+        return done(null, false, { message: 'Invalid email or password' });
+      }
+      return done(null, user);
+    } catch (error) {
+      return done(error);
+    }
+  }
+));
+
+// save session to the cookie
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+// read session from the cookie
+passport.deserializeUser((id, done) => {
+  // user.findById(id).then(user => {
+  //   done(null, user);
+  // });
+  done(null, id);
+})
+
+const app = express();
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"], // 默認策略，限制了可以載入哪些資源
+        scriptSrc: [
+          "'self'", 
+          'https://cdnjs.cloudflare.com', // 允許載入來自 CDNJS 的指令碼
+          'https://cdn.jsdelivr.net' // 允許載入來自 jsDelivr 的指令碼
+        ],
+      },
+    },
+  })
+);
+// session
+app.use(cookieSession({
+  name: 'session',
+  maxAge: 24 * 60 * 60 * 1000,
+  keys: [ config.COOKIE_KEY_1, config.COOKIE_KEY_2],
+}));
+
+// initialize passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
+//ejs config
+app.set("views", "./views");
+app.set("view engine", "ejs");
+app.use(express.static("public"));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+const server = https.createServer({
+  key: fs.readFileSync("key.pem"),
+  cert: fs.readFileSync("cert.pem"),
+}, app);
+
 const io = require("socket.io")(server, {
   //create server and handle CORS issue
   cors: {
@@ -32,13 +128,6 @@ mongoose.connection.on("error", (err) => {
 
 mongoose.connect(MONGO_URL);
 
-//ejs config
-app.set("views", "./views");
-app.set("view engine", "ejs");
-app.use(express.static("public"));
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-
 const rooms = {};
 
 //index route setting
@@ -49,18 +138,57 @@ app.get("/", (req, res) => {
   // res.render("index", { rooms: rooms });
 });
 
+//login check
+function  checkLoggedIn(req, res, next) {
+  const isLoggedIn = req.isAuthenticated() && req.user;
+  if (!isLoggedIn) {
+    return res.status(401).json({
+      error: "You must log in!",
+    })
+  }
+  next();
+}
+
 //login page
 app.get("/login", (req, res) => {
   let errorMessage = '';
   res.render("login", { errorMessage: req.query.errorMessage});
 });
 
+//logout
+app.post("/logout", (req, res) => {
+  req.logout();
+  req.session = null; // 清除 session
+  res.redirect("/login");
+});
+
+// auth google
+app.get('/auth/google', 
+  passport.authenticate('google', {
+    scope: ['email'],
+  }));
+
+app.get('/auth/google/callback', 
+  passport.authenticate('google', {
+    failureRedirect: '/failure',
+    successRedirect: '/home',
+    session: true,
+  }),
+  (req, res) => {
+    console.log('Google called us back!');
+  }
+);
+
 //home route setting
-app.get("/home", (req, res) => {
+app.get("/home", checkLoggedIn, (req, res) => {
   //delete it after login check is created
   //TODO:目前註冊/登入成功只會直接轉頁，後面要加session去紀錄使用者，不然註冊/登入沒意義
   // res.redirect("/login");
   res.render("index", { rooms: rooms });
+});
+
+app.get('/failure', (req, res) => {
+  return res.send('Failed to log in!');
 });
 
 //register api route
@@ -71,7 +199,10 @@ app.post("/api/login", userApiController.getUser);
 //register web request
 app.post("/register", userController.register);
 //login web request
-app.post("/login", userController.getUser);
+app.post("/login", passport.authenticate('local', {
+  successRedirect: '/home',
+  failureRedirect: '/login?errorMessage=Invalid credentials'
+}));
 
 //create room 
 app.post("/room", (req, res) => {

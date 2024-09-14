@@ -37,9 +37,20 @@
       a {
         color: white;
       }
+      
+      .logout {
+        position: fixed;
+        top: 0;
+        right: 0;
+        margin: 10px;
+      }
     </style>
   </head>
   <body>
+    <form action="/logout" method="post" class="logout">
+      <button type="submit" class="btn btn-light">Log out</button>
+    </form>
+
     <div id="room-container">
       <% Object.keys(rooms).forEach(room => { %>
       <div class="mb-2">

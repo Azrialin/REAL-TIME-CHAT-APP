@@ -4,9 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Web Chat App</title>
-    <script>
-      const roomName = "<%= roomName %>";
-    </script>
+
     <!-- <script defer src="http://localhost:3000/socket.io/socket.io.js"></script> -->
     <!-- load socket.io cdn -->
     <script
@@ -86,5 +84,9 @@
         Send
       </button>
     </form>
+
+    <div id="roomName" data-name="<%= roomName %>"></div>
+
+    <script src="/roomScript.js"></script>
   </body>
 </html>

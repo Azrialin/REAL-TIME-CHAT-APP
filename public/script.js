@@ -1,9 +1,13 @@
-const socket = io("http://localhost:3000");
+const socket = io("https://localhost:3000");
 const messageContainer = document.getElementById("message-container");
 const roomContainer = document.getElementById("room-container");
 const messageForm = document.getElementById("send-container");
 const messageInput = document.getElementById("message-input");
 const leaveRoom = document.getElementById("leave-room-button");
+
+//get roomName
+const roomElement = document.getElementById("roomName");
+const roomName = roomElement.getAttribute("data-name");
 
 if (messageForm != null) {
   const userName = prompt("Please enter your name");
