@@ -1,11 +1,6 @@
 const request = require('supertest');
 const { server, mongoose} = require('./server');
-// let server;
 const ioClient = require('socket.io-client');
-
-// beforeAll(() => {
-//   server = require('./server'); // starting server
-// });
 
 afterAll(async () => {
   // closing server
@@ -15,9 +10,10 @@ afterAll(async () => {
 
 //index 
 describe('GET /', () => {
-  it('should respond with a 200 status code', async () => {
+  it('should respond with a 302 status code and redirect to /login', async () => {
     const response = await request(server).get('/');
-    expect(response.statusCode).toBe(200);
+    expect(response.statusCode).toBe(302);
+    expect(response.header.location).toBe('/login');
   });
 });
 
@@ -49,7 +45,7 @@ describe('GET /:room', () => {
     const response = await request(server)
       .get('/Nonexist');
       expect(response.statusCode).toBe(302);
-      expect(response.header.location).toBe('/');
+      expect(response.header.location).toBe('/home');
   });
 
   //Exist room
@@ -71,16 +67,20 @@ describe('GET /:room', () => {
 describe('Socket.IO', () => {
   let clientSocket;
 
-  beforeAll((done) => {
-    clientSocket = ioClient.connect('http://localhost:3000');
-    clientSocket.on('connect', done);
+  beforeAll(async () => {
+    await new Promise((resolve) => {
+      clientSocket = ioClient.connect('https://localhost:3000', {
+        rejectUnauthorized: false // 暫時忽略 self signed certificate
+      });
+      clientSocket.on('connect', resolve);
+    });
   });
 
   afterAll(() => {
     clientSocket.disconnect();
   });
 
-  it('should annouce new user join', async () => {
+  it('should annouce new user join', () => {
     const roomName = 'TestRoom';
     const userName = 'Eric';
 
@@ -97,8 +97,12 @@ describe('Socket.IO Message Tests', () => {
   let receiverSocket;
 
   beforeAll((done) => {
-    clientSocket = ioClient.connect('http://localhost:3000');
-    receiverSocket = ioClient.connect('http://localhost:3000');
+    clientSocket = ioClient.connect('https://localhost:3000', {
+      rejectUnauthorized: false // 暫時忽略 self signed certificate
+    });
+    receiverSocket = ioClient.connect('https://localhost:3000', {
+      rejectUnauthorized: false // 暫時忽略 self signed certificate
+    });
 
     clientSocket.on('connect', () => {
       receiverSocket.on('connect', done);
@@ -110,7 +114,7 @@ describe('Socket.IO Message Tests', () => {
     receiverSocket.disconnect();
   });
 
-  it('should send and receive a message', (done) => {
+  it('should send and receive a message', async () => {
     const roomName = 'TestRoom';
     const testMessage = 'Hello World';
     const userName = 'Eric';
@@ -119,15 +123,17 @@ describe('Socket.IO Message Tests', () => {
     clientSocket.emit('new-user join', roomName, userName);
     receiverSocket.emit('new-user join', roomName, 'tester');
 
-    // listen for the Chatroom-message on receiverSocket
-    receiverSocket.on('Chatroom-message', (data) => {
-      expect(data.message).toBe(testMessage);
-      expect(data.userName).toBe(userName);
-      done();
+    await new Promise((resolve) => {
+      // listen for the Chatroom-message on receiverSocket
+      receiverSocket.on('Chatroom-message', (data) => {
+        expect(data.message).toBe(testMessage);
+        expect(data.userName).toBe(userName);
+        resolve();
+      });
+  
+      // emit send event from clientSocket
+      clientSocket.emit('send-message', roomName, testMessage);
     });
-
-    // emit send event from clientSocket
-    clientSocket.emit('send-message', roomName, testMessage);
   });
 });
 //user disconnect test
@@ -136,8 +142,12 @@ describe('Socket.IO User Disconnect Test', () => {
   let receiverSocket;
 
   beforeAll((done) => {
-    clientSocket = ioClient.connect('http://localhost:3000');
-    receiverSocket = ioClient.connect('http://localhost:3000');
+    clientSocket = ioClient.connect('https://localhost:3000', {
+      rejectUnauthorized: false // 暫時忽略 self signed certificate
+    });
+    receiverSocket = ioClient.connect('https://localhost:3000', {
+      rejectUnauthorized: false // 暫時忽略 self signed certificate
+    });
 
     clientSocket.on('connect', () => {
       receiverSocket.on('connect', done);// close while trying
@@ -158,13 +168,15 @@ describe('Socket.IO User Disconnect Test', () => {
     clientSocket.emit('new-user join', roomName, userName);
     receiverSocket.emit('new-user join', roomName, 'tester');
 
-    // listen for the user-disconnected event on receiverSocket
-    receiverSocket.on('user-disconnected', (disconnectedUserName) => {
-      expect(disconnectedUserName).toBe(userName);
-      done();
+    await new Promise((resolve) => {
+      // listen for the user-disconnected event on receiverSocket
+      receiverSocket.on('user-disconnected', (disconnectedUserName) => {
+        expect(disconnectedUserName).toBe(userName);
+        resolve();
+      });
+  
+      // disconnect clientSocket to trigger the user-disconnected event
+      clientSocket.disconnect();
     });
-
-    // disconnect clientSocket to trigger the user-disconnected event
-    clientSocket.disconnect();
   });
 });
