@@ -111,7 +111,7 @@ const io = require("socket.io")(server, {
 });
 
 //connect to MongoDB
-const MONGO_URL = process.env.MONGO_URL;
+const MONGO_URL = process.env.MONGO_URL || 'mongodb://localhost:27017/test';
 
 mongoose.connection.once("open", () => {
   console.log("MongoDB connection ready~");
