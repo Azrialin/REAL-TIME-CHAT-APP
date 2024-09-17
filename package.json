@@ -17,7 +17,8 @@
   "devDependencies": {
     "jest": "^29.7.0",
     "nodemon": "^3.0.1",
-    "supertest": "^6.3.3"
+    "supertest": "^6.3.3",
+    "wait-on": "^8.0.1"
   },
   "name": "real-time-chat-app",
   "description": "",
@@ -39,6 +40,8 @@
   },
   "homepage": "https://github.com/Azrialin/REAL-TIME-CHAT-APP#readme",
   "jest": {
-    "setupFiles": ["./jest.setup.js"]
+    "setupFiles": [
+      "./jest.setup.js"
+    ]
   }
 }
