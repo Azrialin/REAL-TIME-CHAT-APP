@@ -37,5 +37,8 @@
   "bugs": {
     "url": "https://github.com/Azrialin/REAL-TIME-CHAT-APP/issues"
   },
-  "homepage": "https://github.com/Azrialin/REAL-TIME-CHAT-APP#readme"
+  "homepage": "https://github.com/Azrialin/REAL-TIME-CHAT-APP#readme",
+  "jest": {
+    "setupFiles": ["./jest.setup.js"]
+  }
 }
