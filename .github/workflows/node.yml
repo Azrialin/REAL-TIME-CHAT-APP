@@ -26,5 +26,4 @@ jobs:
           mongodb-version: ${{ matrix.mongodb-version }}
       - run: npm install
       - run: npm start &
-      - run: npx wait-on https://localhost:3000 --timeout 60000 --insecure
       - run: npm test
