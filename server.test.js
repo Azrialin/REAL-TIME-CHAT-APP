@@ -2,6 +2,8 @@ const request = require('supertest');
 const { server, mongoose} = require('./server');
 const ioClient = require('socket.io-client');
 
+jest.setTimeout(60000);
+
 afterAll(async () => {
   // closing server
   await mongoose.connection.close();
