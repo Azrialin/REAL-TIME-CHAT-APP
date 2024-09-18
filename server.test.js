@@ -7,7 +7,12 @@ jest.setTimeout(60000);
 afterAll(async () => {
   // closing server
   await mongoose.connection.close();
-  server.close();
+  await new Promise((resolve, reject) => {
+    server.close((err) => {
+      if (err) return reject(err);
+      resolve();
+    });
+  });
 });
 
 //index 
