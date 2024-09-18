@@ -117,9 +117,9 @@ mongoose.connection.once("open", () => {
   console.log("MongoDB connection ready~");
   //Start the server only after MongoDB is connected
   //listen on port 3000
-  server.listen(3000, () => {
-    console.log("Server listening on port 3000");
-  });
+});
+server.listen(3000, () => {
+  console.log("Server listening on port 3000");
 });
 
 mongoose.connection.on("error", (err) => {
