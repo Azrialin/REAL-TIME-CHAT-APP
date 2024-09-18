@@ -9,6 +9,11 @@ jobs:
     env:
       CI: TRUE
       MONGO_URL: mongodb://localhost:27017/test
+      CLIENT_ID: ${{ secrets.CLIENT_ID }}
+      CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+      SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+      COOKIE_KEY_1: ${{ secrets.COOKIE_KEY_1 }}
+      COOKIE_KEY_2: ${{ secrets.COOKIE_KEY_2 }}
     strategy:
       matrix:
         node-version: [14.x, 16.x]
