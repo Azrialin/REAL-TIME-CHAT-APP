@@ -133,7 +133,6 @@ const rooms = {};
 //index route setting
 app.get("/", (req, res) => {
   //delete it after login check is created
-  //TODO:目前註冊/登入成功只會直接轉頁，後面要加session去紀錄使用者，不然註冊/登入沒意義
   res.redirect("/login");
   // res.render("index", { rooms: rooms });
 });
@@ -182,7 +181,6 @@ app.get('/auth/google/callback',
 //home route setting
 app.get("/home", checkLoggedIn, (req, res) => {
   //delete it after login check is created
-  //TODO:目前註冊/登入成功只會直接轉頁，後面要加session去紀錄使用者，不然註冊/登入沒意義
   // res.redirect("/login");
   res.render("index", { rooms: rooms });
 });
