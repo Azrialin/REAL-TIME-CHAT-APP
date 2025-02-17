@@ -18,7 +18,6 @@ const register = async (req, res) => {
 
         const createdUser = await userModel.createUser(newUser);
         if (createdUser) {
-            //TODO:目前註冊/登入成功只會直接轉頁，後面要加session去紀錄使用者，不然註冊/登入沒意義
             return res.redirect('/home');
         }
 
